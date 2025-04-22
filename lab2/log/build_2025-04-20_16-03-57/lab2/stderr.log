@@ -1,0 +1,2 @@
+/home/schaefm2/ros2_ws/src/lab2/install/lab2/lib/python3.12/site-packages/lab2/follow_wall.py:124: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?
+  if elapsed_time >= 1((math.pi/2) /  .5)/4 and elapsed_time <= 3*((math.pi/2) / .5)/4:

@@ -1,0 +1,22 @@
+[0.509s] Invoking command in '/home/schaefm2/ros2_ws/src/lab2': PS1=<ROS2-Jazzy>[\u@\h \W]$ PYTHONPATH=/home/schaefm2/ros2_ws/src/lab2/build/lab2/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/schaefm2/ros2_ws/src/lab2/install/lab2/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/lab2 build --build-base /home/schaefm2/ros2_ws/src/lab2/build/lab2/build install --record /home/schaefm2/ros2_ws/src/lab2/build/lab2/install.log --single-version-externally-managed install_data
+[0.646s] running egg_info
+[0.660s] writing build/lab2/lab2.egg-info/PKG-INFO
+[0.664s] writing dependency_links to build/lab2/lab2.egg-info/dependency_links.txt
+[0.666s] writing entry points to build/lab2/lab2.egg-info/entry_points.txt
+[0.668s] writing requirements to build/lab2/lab2.egg-info/requires.txt
+[0.670s] writing top-level names to build/lab2/lab2.egg-info/top_level.txt
+[0.716s] reading manifest file 'build/lab2/lab2.egg-info/SOURCES.txt'
+[0.717s] adding license file 'LICENSE'
+[0.717s] writing manifest file 'build/lab2/lab2.egg-info/SOURCES.txt'
+[0.719s] running build
+[0.719s] running build_py
+[0.720s] running install
+[0.723s] running install_lib
+[0.735s] running install_data
+[0.735s] running install_egg_info
+[0.752s] removing '/home/schaefm2/ros2_ws/src/lab2/install/lab2/lib/python3.12/site-packages/lab2-0.0.0-py3.12.egg-info' (and everything under it)
+[0.759s] Copying build/lab2/lab2.egg-info to /home/schaefm2/ros2_ws/src/lab2/install/lab2/lib/python3.12/site-packages/lab2-0.0.0-py3.12.egg-info
+[0.794s] running install_scripts
+[0.914s] Installing driver script to /home/schaefm2/ros2_ws/src/lab2/install/lab2/lib/lab2
+[0.917s] writing list of installed files to '/home/schaefm2/ros2_ws/src/lab2/build/lab2/install.log'
+[0.936s] Invoked command in '/home/schaefm2/ros2_ws/src/lab2' returned '0': PS1=<ROS2-Jazzy>[\u@\h \W]$ PYTHONPATH=/home/schaefm2/ros2_ws/src/lab2/build/lab2/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/schaefm2/ros2_ws/src/lab2/install/lab2/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base build/lab2 build --build-base /home/schaefm2/ros2_ws/src/lab2/build/lab2/build install --record /home/schaefm2/ros2_ws/src/lab2/build/lab2/install.log --single-version-externally-managed install_data

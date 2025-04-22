@@ -1,0 +1,5 @@
+  File "/home/schaefm2/ros2_ws/src/lab2/install/lab2/lib/python3.12/site-packages/lab2/follow_wall.py", line 103
+    if self.regions['front'] < 2.5 and (self.regions['left'] < 2.5 or self.regions['fleft'] < 2.5  :
+                                                                                                   ^
+SyntaxError: invalid syntax
+

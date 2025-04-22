@@ -1,0 +1,2 @@
+[console_scripts]
+driver = lab2.follow_wall:main

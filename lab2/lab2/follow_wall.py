@@ -1,0 +1,170 @@
+import rclpy
+import math
+import time
+from rclpy.node import Node
+
+from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan 
+
+
+class Mover(Node):
+
+    def __init__(self):
+        super().__init__('turtle_mover')
+        self.subscriber_ = self.create_subscription(LaserScan, 'max_robo/scan', self.scan_callback, 10)
+        self.publisher_ = self.create_publisher(Twist, 'max_robo/cmd_vel', 10)
+        
+        timer_period = 0.5  # seconds
+        self.timer = self.create_timer(timer_period, self.control_loop)
+        self.scan = LaserScan()
+        self.regions = {}
+
+        self.inner = False
+        self.outer = False
+
+        # pd control stuff
+        self.p = 0.5
+        self.d = 0.5
+        self.prev_error = 0.0
+        self.prev_derror = 0.0
+        self.left_angle = 0.0
+
+        self.target_distance = 1.5
+
+        self.state = 0 # 0: follow wall, 1: rotate
+        self.direction = 1.0  # 1.0 for left, -1.0 for right
+        self.max_speed = 1.0
+
+        self.start_time = 0.0
+
+    def scan_callback(self, msg):
+        # Just for getting the position of the turtle
+        self.scan = msg
+        # Determination of minimum distances in each region
+        self.regions = {
+            'bright':  min(min(msg.ranges[180:248]), 5),
+            'right': min(min(msg.ranges[248:292]), 5),
+            'fright':  min(min(msg.ranges[237:292]), 5),
+            'front':  min(max(msg.ranges[0:5]), max(msg.ranges[354:359]), 5),
+            'fleft':   min(min(msg.ranges[22:66]), 5),
+            'left':   min(min(msg.ranges[66:130]), 5),
+            'bleft':   min(min(msg.ranges[112:158]), 5),
+        }
+
+        # all this just to calculate the angle of left laser
+        left_ranges = msg.ranges[66:112]  
+        min_distance = min(left_ranges)
+        min_index = left_ranges.index(min_distance)
+        angle_resolution = (msg.angle_max - msg.angle_min) / len(msg.ranges) 
+
+        # in radians
+        self.left_angle = (66 + min_index) * angle_resolution + msg.angle_min 
+        # print(self.left_angle)
+        
+    def control_loop(self):
+        if self.scan is None:
+            print("No scanner found ")
+            return
+        
+        
+
+        msg = Twist()
+        msg.linear.x = .5
+        
+        
+        if self.state == 0:
+
+            # distance_to_wall = self.regions['front']
+
+            #     # Decelerate if approaching a wall
+            # if distance_to_wall < 4:
+            #     msg.linear.x = max(0.0, self.max_speed * (distance_to_wall / 4))
+            # else:
+            #     msg.linear.x = self.max_speed
+
+            angle_error = self.left_angle -  math.pi/2 
+            angle_derivative = angle_error - self.prev_error
+
+            current_distance = self.regions['left']
+
+            distance_error = current_distance - self.target_distance 
+            distance_derivative = distance_error - self.prev_derror
+
+            msg.angular.z = self.p * angle_error  + self.d * angle_derivative + self.p * distance_error + self.d * distance_derivative
+
+            # Update previous error
+            self.prev_error = angle_error
+            self.prev_derror = distance_error
+
+        # we are rotating
+        else:
+            # outer corner
+            if self.outer:
+                turn_speed = 1.0
+                
+                elapsed_time = time.time() - self.start_time
+                print(elapsed_time)
+                # this is the time it takes to rotate a little, move, then rotate again
+                if elapsed_time > (math.pi/2) / 1.0:
+                    turn_speed = 0.0
+                if elapsed_time > (math.pi/2) / 1.0 + .5:
+                    self.state = 0
+                    self.outer = False
+                    
+                msg.linear.x = .7
+                msg.angular.z = turn_speed 
+
+            elif self.inner:
+                turn_speed = -.5
+                move_speed = 0.0
+                msg.angular.z = turn_speed 
+
+                elapsed_time = time.time() - self.start_time
+                # this is the time it takes to rotate a little, move, then rotate again
+                if elapsed_time >= ((math.pi/2) /  .5)/3 and elapsed_time <= 2*((math.pi/2) / .5)/3:
+                    turn_speed = 0.0
+                    move_speed = 1.0
+                if elapsed_time > ((math.pi/2) /  .5) + ((math.pi/2) /  .5)/3:
+                    self.state = 0
+                    self.inner = False
+                
+                msg.linear.x = move_speed
+                msg.angular.z = turn_speed
+        
+        if self.state == 0: 
+            self.out_corner()
+            self.inner_corner()
+
+        self.publisher_.publish(msg)
+        # self.get_logger().info(f'Publishing linear={msg.linear.x} angular={msg.angular.z}')    
+
+
+    def inner_corner (self):
+        if self.regions['front'] < 4  and self.regions['left'] < 3.5 and self.regions['fleft'] < 3.5:
+            print("INNER CORNER TRIGGERED")
+            self.state = 1
+            self.start_time = time.time()
+            self.inner = True
+        
+    def out_corner (self):
+        # self.regions['bleft'] < 3 and 
+        if self.regions['fleft'] == 5:
+            print("OUT CORNER TRIGGERED")
+            self.state = 1
+            self.start_time = time.time()
+            self.outer = True
+             
+        
+def main(args=None):
+    rclpy.init(args=args)
+    node = Mover()
+    rclpy.spin(node)
+    node.destroy_node()
+    rclpy.shutdown()
+    
+
+if __name__ == '__main__':
+    main()
+
+
+# notes: lidar scans counter clockwise
